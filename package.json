@@ -1,0 +1,91 @@
+{
+  "name": "midway-practice",
+  "version": "1.0.0",
+  "description": "使用 midway + egg + ORM 完成 数据库 CRUD，Restful 接口基础功能，应用服务基础功能",
+  "private": true,
+  "dependencies": {
+    "@midwayjs/bootstrap": "^3.3.5",
+    "@midwayjs/core": "^3.0.0",
+    "@midwayjs/cross-domain": "^3.3.5",
+    "@midwayjs/jwt": "^3.3.11",
+    "@midwayjs/koa": "^3.3.5",
+    "@midwayjs/logger": "^2.14.0",
+    "@midwayjs/redis": "^3.3.2",
+    "@midwayjs/sequelize": "^3.3.5",
+    "@midwayjs/swagger": "^3.0.0",
+    "@midwayjs/task": "^3.0.0",
+    "@midwayjs/validate": "^3.3.5",
+    "@mw-components/jaeger": "^11.0.5",
+    "@mw-components/koid": "^7.0.5",
+    "@prisma/client": "^3.7.0",
+    "@waiting/shared-core": "^17.0.0",
+    "@waiting/shared-types": "^17.0.0",
+    "bcryptjs": "^2.4.3",
+    "bignumber.js": "^9.0.2",
+    "chalk": "^5.0.0",
+    "dayjs": "^1.11.1",
+    "dotenv": "^16.0.0",
+    "joi": "^17.5.0",
+    "lodash": "^4.17.21",
+    "mysql2": "^2.3.3",
+    "path-to-regexp": "^6.2.1",
+    "sequelize": "^6.19.0",
+    "tsconfig-paths": "^4.0.0"
+  },
+  "devDependencies": {
+    "@midwayjs/cli": "^1.3.6",
+    "@midwayjs/luckyeye": "^1.0.3",
+    "@midwayjs/mock": "^3.0.0",
+    "@types/chai": "^4.3.1",
+    "@types/ioredis": "^4.28.10",
+    "@types/jest": "^27.4.0",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/koa": "^2.13.4",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^17.0.35",
+    "@types/sinon": "^10.0.11",
+    "cross-env": "^7.0.3",
+    "egg-mock": "^4.2.0",
+    "eslint": "^7.5.0",
+    "intelli-espower-loader": "^1.1.0",
+    "jest": "^27.4.5",
+    "mocha": "^10.0.0",
+    "mwts": "^1.3.0",
+    "swagger-ui-dist": "^4.1.3",
+    "ts-jest": "^27.1.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.5.4"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "online": "NODE_ENV=production pm2-runtime start ./bootstrap.js --name midway-practice -i 1",
+    "start": "NODE_ENV=production node ./bootstrap.js",
+    "start_build": "npm run build && cross-env NODE_ENV=development midway-bin dev",
+    "dev": "cross-env NODE_ENV=local midway-bin dev --ts",
+    "test": "midway-bin test --ts --mocha --parallel=false",
+    "cov": "midway-bin cov --ts",
+    "lint": "mwts check",
+    "lint:fix": "mwts fix",
+    "ci": "npm run cov",
+    "build": "midway-bin build -c",
+    "check": "luckyeye",
+    "clear": "rm -rf ./logs ./run ./dist"
+  },
+  "midway-bin-clean": [
+    ".vscode/.tsbuildinfo",
+    "dist"
+  ],
+  "midway-luckyeye": {
+    "packages": [
+      "midway_v2"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ddzyan/midway-prisma.git"
+  },
+  "author": "dingdongzhao",
+  "license": "MIT"
+}
