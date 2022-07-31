@@ -1,15 +1,20 @@
-import * as assert from 'assert';
-import { relative } from 'path';
+import { createApp, close, createHttpRequest } from '@midwayjs/mock';
+import { Framework } from '@midwayjs/koa';
 
-import { testConfig } from '../root.config';
+describe('test/controller/home.test.ts', () => {
 
-const filename = relative(process.cwd(), __filename).replace(/\\/gu, '/');
-describe(filename, () => {
-  it('should GET /api', async () => {
-    const { httpRequest } = testConfig;
-    const result = await httpRequest.get('/api');
+  it('should GET /', async () => {
+    // create app
+    const app = await createApp<Framework>();
 
-    assert.equal(result.status, 200);
-    assert.equal(result.body.data, 'Hello Midwayjs!');
+    // make request
+    const result = await createHttpRequest(app).get('/');
+
+    // use expect by jest
+    expect(result.status).toBe(200);
+
+    // close app
+    await close(app);
   });
+
 });

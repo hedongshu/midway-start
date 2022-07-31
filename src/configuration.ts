@@ -1,63 +1,49 @@
+import { Configuration, App, Inject } from '@midwayjs/decorator';
+import * as koa from '@midwayjs/koa';
+import * as validate from '@midwayjs/validate';
+import * as info from '@midwayjs/info';
+import * as orm from '@midwayjs/typeorm';
+import { join } from 'path';
+import { DefaultErrorFilter } from './filter/default.filter';
+import { NotFoundFilter } from './filter/notfound.filter';
+import { ReportMiddleware } from './middleware/report.middleware';
+import { FormatMiddleware } from './middleware/format.middleware';
+import * as redis from '@midwayjs/redis';
+import * as swagger from '@midwayjs/swagger';
+import * as jwt from '@midwayjs/jwt';
+import * as crossDomain from '@midwayjs/cross-domain';
+import { SecurityMiddleware } from './middleware/security.middleware';
 import * as dotenv from 'dotenv';
+import { ILogger } from '@midwayjs/core';
+
+// 初始化环境变量
 dotenv.config();
 
-import * as koa from '@midwayjs/koa';
-import { App, Configuration, Logger } from '@midwayjs/decorator';
-import * as task from '@midwayjs/task';
-import * as validate from '@midwayjs/validate';
-import * as crossDomain from '@midwayjs/cross-domain';
-import { ILifeCycle, IMidwayContainer } from '@midwayjs/core';
-import { IMidwayLogger } from '@midwayjs/logger';
-import * as swagger from '@midwayjs/swagger';
-import * as jaeger from '@mw-components/jaeger';
-import * as koid from '@mw-components/koid';
-import * as redis from '@midwayjs/redis';
-import * as sequlize from '@midwayjs/sequelize';
-import { join } from 'path';
-import * as dayjs from 'dayjs';
-import * as lodash from 'lodash';
-import * as jwt from '@midwayjs/jwt';
-
-import { RequestIdMiddleware } from './middleware/requestId';
-import { FormatMiddleware } from './middleware/format';
-import { AccessLogMiddleware } from './middleware/accessLog';
-import { JwtMiddleware } from './middleware/jwt';
-import { NotFoundFilter } from './filter/notfound';
-
 @Configuration({
-  importConfigs: [join(__dirname, './config')],
-  conflictCheck: true,
   imports: [
-    crossDomain,
+    crossDomain,  // 支持跨域
+    jwt,          // 用于访问凭证签发时进行JWT编码
+    swagger,      // API接口工具
+    redis,        // 缓存
+    orm,          // 数据库操作
     koa,
-    jaeger,
-    koid,
-    { component: swagger, enabledEnvironment: ['local'] },
-    redis,
-    task,
     validate,
-    sequlize,
-    jwt,
+    {
+      component: info,
+      enabledEnvironment: ['local'],
+    },
   ],
+  importConfigs: [join(__dirname, './config')],
 })
-export class ContainerLifeCycle implements ILifeCycle {
+export class ContainerLifeCycle {
   @App()
   app: koa.Application;
-  @Logger()
-  readonly logger: IMidwayLogger;
 
-  async onReady(applicationContext: IMidwayContainer): Promise<void> {
-    this.app.useMiddleware([
-      RequestIdMiddleware,
-      AccessLogMiddleware,
-      FormatMiddleware,
-      JwtMiddleware,
-    ]);
-    this.app.useFilter([NotFoundFilter]);
+  @Inject()
+  logger: ILogger;
 
-    applicationContext.registerObject('dayjs', dayjs);
-    applicationContext.registerObject('lodash', lodash);
+  async onReady() {
+    this.app.useMiddleware([SecurityMiddleware, FormatMiddleware, ReportMiddleware]);
+    this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);
   }
-
-  async onStop(): Promise<void> {}
 }
